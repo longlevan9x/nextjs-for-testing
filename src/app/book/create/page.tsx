@@ -22,8 +22,8 @@ const bookSchema = z.object({
   author: z.string().min(1, "Tác giả là bắt buộc"),
   year: z.number().min(0, "Năm xuất bản phải là một số dương").or(z.string().regex(/^\d+$/, "Năm xuất bản phải là một số").transform(Number)),
   description: z.string().optional(),
-  level: z.enum(levels, "Cấp độ là bắt buộc"),
-  genre: z.enum(genres, "Thể loại là bắt buộc"),
+  level: z.nativeEnum(levels, "Cấp độ là bắt buộc"),
+  genre: z.nativeEnum(genres, "Thể loại là bắt buộc"),
 });
 
 
