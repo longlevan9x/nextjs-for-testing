@@ -39,7 +39,7 @@ export default function BookList() {
 
   const [books, setBooks] = useState<Book[]>(initialBooks);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const router = useRouter();
+  const router: any = useRouter();
 
   useEffect(() => {
     const storedBooks = JSON.parse(localStorage.getItem('books') || '[]') as Book[];
