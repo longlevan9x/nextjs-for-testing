@@ -50,11 +50,11 @@ export default function BookList() {
 
 
   useEffect(() => {
-    if (router.query?.success) {
+    if (router?.query?.success) {
       setSuccessMessage('Sách đã được thêm thành công!');
       setTimeout(() => setSuccessMessage(null), 3000); // Remove message after 3 seconds
     }
-  }, [router.query?.success]);
+  }, [router?.query?.success]);
 
   return (
     <>
