@@ -13,8 +13,8 @@ interface Book {
   description?: string;
 }
 
-const genres = ["Chữ hán", "Từ vựng", "Ngữ pháp"];
-const levels = ["N5", "N4", "N3", "N2", "N1"];
+const  genres: any = ["Chữ hán", "Từ vựng", "Ngữ pháp"];
+const levels: any = ["N5", "N4", "N3", "N2", "N1"];
 
 // Define the Zod schema for validation
 const bookSchema = z.object({
@@ -22,8 +22,8 @@ const bookSchema = z.object({
   author: z.string().min(1, "Tác giả là bắt buộc"),
   year: z.number().min(0, "Năm xuất bản phải là một số dương").or(z.string().regex(/^\d+$/, "Năm xuất bản phải là một số").transform(Number)),
   description: z.string().optional(),
-  level: z.nativeEnum(levels, "Cấp độ là bắt buộc"),
-  genre: z.nativeEnum(genres, "Thể loại là bắt buộc"),
+  level: z.enum(levels, "Cấp độ là bắt buộc"),
+  genre: z.enum(genres, "Thể loại là bắt buộc"),
 });
 
 
