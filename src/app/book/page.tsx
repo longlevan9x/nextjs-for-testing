@@ -57,57 +57,54 @@ export default function BookList() {
   }, [router?.query?.success]);
 
   return (
-    <>
-      <Nav></Nav>
-      <div className="container mx-auto p-4">
-        {successMessage && (
-          <div className="mb-4 p-4 bg-green-200 text-green-800 rounded-lg">
-            {successMessage}
-          </div>
-        )}
-
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Danh sách sách</h1>
-          <Link
-            href="/book/create"
-            className="bg-green-500 text-white px-4 py-2 rounded-lg"
-          >
-            New
-          </Link>
+    <div className="container mx-auto p-4">
+      {successMessage && (
+        <div className="mb-4 p-4 bg-green-200 text-green-800 rounded-lg">
+          {successMessage}
         </div>
+      )}
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th className="py-3 px-6 text-left">Tên</th>
-                <th className="py-3 px-6 text-left">Trình độ</th>
-                <th className="py-3 px-6 text-center">Tác giả</th>
-                <th className="py-3 px-6 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-600 text-sm font-light">
-              {/* Map over data array to create rows dynamically */}
-              {books.map((item) => (
-                <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="py-3 px-6 text-left">{item.name}</td>
-                  <td className="py-3 px-6 text-left">{item.level}</td>
-                  <td className="py-3 px-6 text-center">{item.author}</td>
-                  <td className="py-3 px-6 text-center">
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">
-                      Edit
-                    </button>
-                    <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Danh sách sách</h1>
+        <Link
+          href="/book/create"
+          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+        >
+          New
+        </Link>
       </div>
-    </>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">Tên</th>
+              <th className="py-3 px-6 text-left">Trình độ</th>
+              <th className="py-3 px-6 text-center">Tác giả</th>
+              <th className="py-3 px-6 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="text-gray-600 text-sm font-light">
+            {/* Map over data array to create rows dynamically */}
+            {books.map((item) => (
+              <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
+                <td className="py-3 px-6 text-left">{item.name}</td>
+                <td className="py-3 px-6 text-left">{item.level}</td>
+                <td className="py-3 px-6 text-center">{item.author}</td>
+                <td className="py-3 px-6 text-center">
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">
+                    Edit
+                  </button>
+                  <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
