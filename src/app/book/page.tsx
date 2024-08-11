@@ -15,28 +15,28 @@ interface Book {
   level: string;
 }
 
-export default function BookList() {
-  const initialBooks: Book[] = [
-    {
-      id: 1,
-      name: 'Sách Tiếng Việt 1',
-      author: 'Nguyễn Văn A',
-      genre: 'Chữ hán',
-      year: 2021,
-      description: 'Cuốn sách tiếng Việt cho người mới bắt đầu.',
-      level: 'N5',
-    },
-    {
-      id: 2,
-      name: 'Sách Tiếng Việt 2',
-      author: 'Trần Văn B',
-      genre: 'Từ vựng',
-      year: 2022,
-      description: 'Cuốn sách từ vựng nâng cao.',
-      level: 'N3',
-    },
-  ];
+const initialBooks: Book[] = [
+  {
+    id: 1,
+    name: 'Sách Tiếng Việt 1',
+    author: 'Nguyễn Văn A',
+    genre: 'Chữ hán',
+    year: 2021,
+    description: 'Cuốn sách tiếng Việt cho người mới bắt đầu.',
+    level: 'N5',
+  },
+  {
+    id: 2,
+    name: 'Sách Tiếng Việt 2',
+    author: 'Trần Văn B',
+    genre: 'Từ vựng',
+    year: 2022,
+    description: 'Cuốn sách từ vựng nâng cao.',
+    level: 'N3',
+  },
+];
 
+export default function BookList() {
   const [books, setBooks] = useState<Book[]>(initialBooks);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router: any = useRouter();
