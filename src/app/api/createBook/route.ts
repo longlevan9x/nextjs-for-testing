@@ -14,10 +14,16 @@ export async function POST(request: any) {
   const filePath = path.join(process.cwd(), 'public', 'data/book.json');
 
   try {
-    // Read the existing JSON data
-    const jsonData: any = fs.readFileSync(filePath);
-    const data: { increment: number, items: any[] } = JSON.parse(jsonData);
-    data.increment += 1;
+    let data: { increment: number, items: any[] } = { items: [], increment: 1 };
+
+    if (fs.existsSync(filePath)) {
+      // If the file exists, read the existing data
+      const jsonData: any = fs.readFileSync(filePath);
+      data = JSON.parse(jsonData);
+    } else {
+      // If the file does not exist, create an empty file with the initial structure
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    }
 
     // Create a new item with a unique ID
     const newItem = {
@@ -29,6 +35,8 @@ export async function POST(request: any) {
       description: body.description,
       level: body.level
     };
+
+    data.increment += 1;
 
     // Add the new item to the list
     data.items.push(newItem);
