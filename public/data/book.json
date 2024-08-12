@@ -45,15 +45,6 @@
       "year": 2021,
       "description": "Cuốn sách tiếng Việt cho người mới bắt đầu.",
       "level": "N5"
-    },
-    {
-      "id": 6,
-      "name": "Sách Tiếng Việt 1",
-      "author": "Nguyễn Văn A",
-      "genre": "Chữ hán",
-      "year": 2021,
-      "description": "Cuốn sách tiếng Việt cho người mới bắt đầu.",
-      "level": "N5"
     }
   ]
 }

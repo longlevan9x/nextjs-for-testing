@@ -134,7 +134,7 @@ export default function BookList() {
         <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg">
             <h2 className="text-lg font-bold mb-4">Xác nhận xóa!</h2>
-            <p>Bạn chắc chắn xóa sách: '{itemToDelete.name}'?</p>
+            <p>Bạn chắc chắn xóa sách: &apos;{itemToDelete.name}&apos;?</p>
             <div className="mt-4 flex justify-end">
               <button
                 onClick={() => setItemToDelete(null)}
