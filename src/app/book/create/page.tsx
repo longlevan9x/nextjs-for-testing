@@ -1,5 +1,6 @@
 "use client";
 
+import Notification from '@/components/notification';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ interface Book {
   level: string;
   year: number;
   description?: string;
+  id: number;
 }
 
 const genres: string[] = ["Chữ hán", "Từ vựng", "Ngữ pháp"];
@@ -28,22 +30,24 @@ const bookSchema = z.object({
 
 
 export default function NewBook() {
-  const [bookDetails, setBookDetails] = useState<Book>({
+  const [bookDetail, setBookDetail] = useState<Book>({
     name: '',
     author: '',
     year: new Date().getFullYear(),
     description: '',
     level: '',
     genre: '',
+    id: 0
   });
 
+  const [notification, setNotification] = useState(null as any);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setBookDetails({
-      ...bookDetails,
+    setBookDetail({
+      ...bookDetail,
       [name]: value,
     });
   };
@@ -51,13 +55,32 @@ export default function NewBook() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      bookSchema.parse(bookDetails);
+      bookSchema.parse(bookDetail);
+      // Send a POST request to the API route
+      fetch('/api/createBook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookDetail),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            setNotification({
+              type: 'success',
+              message: {
+                title: 'Thêm mới thành công!',
+                body: `'${bookDetail.name}' đã thêm mới thành công!`,
+              },
+            });
+            router.push('/book?success=true');
+          } else {
+            console.error('Failed to add item:', data.error);
+          }
+        })
+        .catch((error) => console.error('Error:', error));
 
-      // Save the book to localStorage or send to the server
-      const existingBooks = JSON.parse(localStorage.getItem('books') || '[]') as Book[];
-      localStorage.setItem('books', JSON.stringify([...existingBooks, bookDetails]));
-
-      router.push('/book?success=true');
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages: { [key: string]: string } = {};
@@ -81,7 +104,7 @@ export default function NewBook() {
             type="text"
             id="name"
             name="name"
-            value={bookDetails.name}
+            value={bookDetail.name}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Nhập tên sách"
@@ -95,7 +118,7 @@ export default function NewBook() {
             type="text"
             id="author"
             name="author"
-            value={bookDetails.author}
+            value={bookDetail.author}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.author ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Nhập tên tác giả"
@@ -109,7 +132,7 @@ export default function NewBook() {
             type="number"
             id="year"
             name="year"
-            value={bookDetails.year}
+            value={bookDetail.year}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.year ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Nhập năm xuất bản"
@@ -122,7 +145,7 @@ export default function NewBook() {
           <select
             id="level"
             name="level"
-            value={bookDetails.level}
+            value={bookDetail.level}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.level ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
@@ -139,7 +162,7 @@ export default function NewBook() {
           <select
             id="genre"
             name="genre"
-            value={bookDetails.genre}
+            value={bookDetail.genre}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.genre ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
@@ -156,7 +179,7 @@ export default function NewBook() {
           <textarea
             id="description"
             name="description"
-            value={bookDetails.description}
+            value={bookDetail.description}
             onChange={handleChange}
             className={`w-full p-2 border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
             placeholder="Nhập mô tả ngắn gọn về sách"
@@ -171,6 +194,8 @@ export default function NewBook() {
           Thêm Sách
         </button>
       </form>
+
+      <Notification message={notification?.message} type={notification?.type} />
     </div>
   );
 }

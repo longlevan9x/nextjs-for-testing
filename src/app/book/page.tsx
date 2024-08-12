@@ -1,8 +1,9 @@
 'use client';
 
-import Nav from "@/components/nav";
+import Notification from '@/components/notification';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import React, { useEffect, useState } from 'react';
 
 interface Book {
@@ -15,26 +16,7 @@ interface Book {
   level: string;
 }
 
-const initialBooks: Book[] = [
-  {
-    id: 1,
-    name: 'Sách Tiếng Việt 1',
-    author: 'Nguyễn Văn A',
-    genre: 'Chữ hán',
-    year: 2021,
-    description: 'Cuốn sách tiếng Việt cho người mới bắt đầu.',
-    level: 'N5',
-  },
-  {
-    id: 2,
-    name: 'Sách Tiếng Việt 2',
-    author: 'Trần Văn B',
-    genre: 'Từ vựng',
-    year: 2022,
-    description: 'Cuốn sách từ vựng nâng cao.',
-    level: 'N3',
-  },
-];
+const initialBooks: Book[] = [];
 
 export default function BookList() {
   const [books, setBooks] = useState<Book[]>(initialBooks);
@@ -42,12 +24,11 @@ export default function BookList() {
   const router: any = useRouter();
 
   useEffect(() => {
-    const storedBooks = JSON.parse(localStorage.getItem('books') || '[]') as Book[];
-    if (storedBooks.length > 0) {
-      setBooks([...initialBooks, ...storedBooks]);
-    }
+    // Importing the JSON file statically
+    fetch('/data/book.json')
+      .then((response) => response.json())
+      .then((data) => setBooks(data.items));
   }, []);
-
 
   useEffect(() => {
     if (router?.query?.success) {
@@ -55,6 +36,45 @@ export default function BookList() {
       setTimeout(() => setSuccessMessage(null), 3000); // Remove message after 3 seconds
     }
   }, [router?.query?.success]);
+
+  // State for managing notification message
+  const [notification, setNotification] = useState(null as any);
+
+  // State for managing the item to be deleted
+  const [itemToDelete, setItemToDelete] = useState(null as Book | any);
+
+  // Function to open confirmation modal
+  const openConfirmationModal = (item: Book) => {
+    setItemToDelete(item);
+  };
+
+  // Function to handle delete action with notification
+  const handleDelete = () => {
+    if (itemToDelete) {
+      const id = itemToDelete.id;
+      fetch(`/api/deleteBook?id=${id}`, {
+        method: 'DELETE',
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            setBooks(books.filter(item => item.id !== id));
+            setItemToDelete(null);
+
+            setNotification({
+              type: 'success',
+              message: {
+                title: 'Xóa thành công!',
+                body: `'${itemToDelete.name}' đã xóa thành công!`,
+              },
+            });
+          } else {
+            console.error('Failed to delete item');
+          }
+        })
+        .catch((error) => console.error('Error:', error));
+    }
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -93,10 +113,11 @@ export default function BookList() {
                 <td className="py-3 px-6 text-left">{item.level}</td>
                 <td className="py-3 px-6 text-center">{item.author}</td>
                 <td className="py-3 px-6 text-center">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">
+                  <Link href={"/book/update/" + item.id} className="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2">
                     Edit
-                  </button>
-                  <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
+                  </Link>
+                  <button className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    onClick={() => openConfirmationModal(item)}>
                     Delete
                   </button>
                 </td>
@@ -105,6 +126,32 @@ export default function BookList() {
           </tbody>
         </table>
       </div>
+
+      <Notification message={notification?.message} type={notification?.type} />
+
+      {/* Confirmation Modal */}
+      {itemToDelete && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-lg font-bold mb-4">Xác nhận xóa!</h2>
+            <p>Bạn chắc chắn xóa sách: '{itemToDelete.name}'?</p>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setItemToDelete(null)}
+                className="bg-gray-500 text-white px-4 py-2 rounded mr-2 hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
