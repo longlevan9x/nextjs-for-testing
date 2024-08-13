@@ -3,39 +3,45 @@
 import Notification from '@/components/notification';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation'
 
 import React, { useEffect, useState } from 'react';
-
-interface Book {
-  id: number;
-  name: string;
-  author: string;
-  genre: string;
-  year: number;
-  description?: string;
-  level: string;
-}
+import { deleteBook, getBooks, initDefaultBook } from "@/app/actions/book";
+import { Book } from "@/app/model/book";
 
 const initialBooks: Book[] = [];
 
 export default function BookList() {
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState<Book[]>(initialBooks);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const router: any = useRouter();
 
   useEffect(() => {
-    // Importing the JSON file statically
-    fetch('/data/book.json')
-      .then((response) => response.json())
-      .then((data) => setBooks(data.items));
+    initDefaultBook();
+    const books = getBooks();
+    setBooks(books)
   }, []);
 
   useEffect(() => {
-    if (router?.query?.success) {
-      setSuccessMessage('Sách đã được thêm thành công!');
+    if (searchParams.get('success')) {
+      let message = 'Sách đã được thêm thành công!';
+
+      if (searchParams.get('success') == 'update') {
+        message = 'Sách đã cập nhật thành công!';
+      }
+
+      setSuccessMessage(message);
+      setNotification({
+        type: 'success',
+        message: {
+          title: message,
+          body: message,
+        },
+      });
       setTimeout(() => setSuccessMessage(null), 3000); // Remove message after 3 seconds
     }
-  }, [router?.query?.success]);
+  }, [searchParams.get('success')]);
 
   // State for managing notification message
   const [notification, setNotification] = useState(null as any);
@@ -52,27 +58,17 @@ export default function BookList() {
   const handleDelete = () => {
     if (itemToDelete) {
       const id = itemToDelete.id;
-      fetch(`/api/deleteBook?id=${id}`, {
-        method: 'DELETE',
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            setBooks(books.filter(item => item.id !== id));
-            setItemToDelete(null);
+      deleteBook(id);
+      setBooks(books.filter(item => item.id !== id));
+      setItemToDelete(null);
 
-            setNotification({
-              type: 'success',
-              message: {
-                title: 'Xóa thành công!',
-                body: `'${itemToDelete.name}' đã xóa thành công!`,
-              },
-            });
-          } else {
-            console.error('Failed to delete item');
-          }
-        })
-        .catch((error) => console.error('Error:', error));
+      setNotification({
+        type: 'success',
+        message: {
+          title: 'Xóa thành công!',
+          body: `'${itemToDelete.name}' đã xóa thành công!`,
+        },
+      });
     }
   };
 

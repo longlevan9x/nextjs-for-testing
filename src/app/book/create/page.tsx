@@ -4,6 +4,7 @@ import Notification from '@/components/notification';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
+import { createBook } from '@/app/actions/book';
 
 interface Book {
   name: string;
@@ -56,30 +57,8 @@ export default function NewBook() {
     e.preventDefault();
     try {
       bookSchema.parse(bookDetail);
-      // Send a POST request to the API route
-      fetch('/api/createBook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookDetail),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            setNotification({
-              type: 'success',
-              message: {
-                title: 'Thêm mới thành công!',
-                body: `'${bookDetail.name}' đã thêm mới thành công!`,
-              },
-            });
-            router.push('/book?success=true');
-          } else {
-            console.error('Failed to add item:', data.error);
-          }
-        })
-        .catch((error) => console.error('Error:', error));
+      createBook(bookDetail);
+      router.push('/book?success=true');
 
     } catch (error) {
       if (error instanceof z.ZodError) {

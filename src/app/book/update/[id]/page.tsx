@@ -4,6 +4,7 @@ import Notification from '@/components/notification';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
+import { getDetailBook, updateBook } from '@/app/actions/book';
 
 interface Book {
     name: string;
@@ -29,7 +30,7 @@ const bookSchema = z.object({
 });
 
 
-export default function UpdateBook({ params }: { params: { id: number } }) {
+export default function UpdateBook({ params }: { params: { id: string } }) {
     const router = useRouter();
     const [notification, setNotification] = useState(null as any);
 
@@ -47,17 +48,8 @@ export default function UpdateBook({ params }: { params: { id: number } }) {
 
     useEffect(() => {
         if (params.id) {
-            // Fetch the details of the item
-            fetch(`/api/detailBook?id=${params.id}`)
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        setBookDetail(data.item);
-                    } else {
-                        setError(data.error);
-                    }
-                })
-                .catch((error) => setError('Failed to fetch item details'));
+            const book: Book = getDetailBook(parseInt(params.id)) as Book;
+            setBookDetail(book);
         }
     }, [params.id]);
 
@@ -75,32 +67,8 @@ export default function UpdateBook({ params }: { params: { id: number } }) {
         e.preventDefault();
         try {
             bookSchema.parse(bookDetail);
-
-            // Send a PUT request to the API route
-            fetch('/api/updateBook', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bookDetail),
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        // Call the parent callback function to update the UI
-                        setNotification({
-                            type: 'success',
-                            message: {
-                              title: 'Cập nhật thành công!',
-                              body: `'${bookDetail.name}' đã cập nhật thành công!`,
-                            },
-                          });
-                        router.push('/book?success=true');
-                    } else {
-                        console.error('Failed to update item:', data.error);
-                    }
-                })
-                .catch((error) => console.error('Error:', error));
+            updateBook(parseInt(params.id), bookDetail);
+            router.push('/book?success=update');
 
             // Save the book to localStorage or send to the server
         } catch (error) {
