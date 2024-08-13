@@ -46,7 +46,6 @@ export async function POST(request: any) {
 
     return NextResponse.json({ success: true, item: newItem }, { status: 201 });
   } catch (error) {
-    console.log("CREATE BOOK", error);
-    return NextResponse.json({ error: 'Failed to add item' }, { status: 500 });
+    return NextResponse.json({ errorMessage: 'Failed to add item', error }, { status: 500 });
   }
 }
