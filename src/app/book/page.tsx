@@ -2,8 +2,7 @@
 
 import Notification from '@/components/notification';
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from "next/navigation";
 
 import React, { useEffect, useState } from 'react';
 import { deleteBook, getBooks, initDefaultBook } from "@/app/actions/book";
