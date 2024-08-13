@@ -10,7 +10,6 @@ export async function POST(request: any) {
     return NextResponse.json({ error: 'name, author, genre, year, level are required' }, { status: 400 });
   }
 
-  // Path to the JSON file
   const filePath = path.join(process.cwd(), 'public', 'data/book.json');
 
   try {
