@@ -6,8 +6,8 @@ export async function POST(request: any) {
   const body = await request.json();
 
   // Validate the incoming data
-  if (!body.name || !body.description) {
-    return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
+  if (!body.id || !body.name || !body.author || !body.genre || !body.year || !body.level) {
+    return NextResponse.json({ error: 'ID, name, author, genre, year, level are required' }, { status: 400 });
   }
 
   // Path to the JSON file
